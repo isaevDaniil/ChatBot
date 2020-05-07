@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChatBot.Bot;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,10 +37,41 @@ namespace ChatBot.Model
             }
             return commandResult;
         }
-        private string ExecuteHelpCommand(string message)
+        private string ExecuteHelpCommand(string command)
         {
-            Console.WriteLine(message);
-            string result = Console.ReadLine();
+            string result = "";
+            if (!(command.Contains("(") && command.Contains(")")))
+            {
+                Console.WriteLine(command);
+                result = Console.ReadLine();               
+            }
+            else
+            {
+                string[] str = command.Split(new char[] { '(' });
+                string commandName = str[0];
+
+                List<string> parameters = new List<string>();
+                str[1] = str[1].Replace("  ", "");
+                if (str[1].Length < 3)
+                {
+                    result = MyBot.ExecuteHelpFunction(commandName, parameters.ToArray());
+                }
+                else
+                {
+                    string[] parametersQuestion = str[1].Split(new char[] { ',' });
+
+                    parametersQuestion[parametersQuestion.Length - 1] = parametersQuestion[parametersQuestion.Length - 1].Trim(new char[] { ')' });
+
+
+                    foreach (var item in parametersQuestion)
+                    {
+                        Console.WriteLine(item);
+                        parameters.Add(Console.ReadLine());
+                    }
+
+                    result = MyBot.ExecuteHelpFunction(commandName, parameters.ToArray());
+                }              
+            }
             return result;
         }
     }
